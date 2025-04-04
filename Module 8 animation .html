@@ -1,0 +1,107 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Canvas Animation</title>
+  <style>
+    canvas { background: #111; display: block; margin: 0 auto; }
+  </style>
+</head>
+<body>
+<canvas id="canvas" width="800" height="600"></canvas>
+<script>
+const canvas = document.getElementById('canvas');
+const ctx = canvas.getContext('2d');
+const w = canvas.width;
+const h = canvas.height;
+
+function rand(n) {
+  return Math.random() * n;
+}
+
+function randn(n) {
+  return (Math.random() - 0.5) * n;
+}
+
+const oneDegree = 2 * Math.PI / 360;
+
+let o1 = {
+  x: w / 2,
+  y: h / 2,
+  r: 50,
+  c: 260,
+  a: 0.75,
+  angle: rand(360),
+  changeA: 1,
+  distance: 10
+};
+
+function clear() {
+  ctx.fillStyle = "rgba(0, 0, 0, 0.1)";
+  ctx.fillRect(0, 0, w, h);
+}
+
+function circle(o) {
+  ctx.beginPath();
+  ctx.arc(o.x, o.y, o.r, 0, Math.PI * 2);
+  ctx.fillStyle = `hsl(${o.c}, 100%, 50%)`;
+  ctx.fill();
+}
+
+function forward(o) {
+  o.x += Math.cos(o.angle * oneDegree) * o.distance;
+  o.y += Math.sin(o.angle * oneDegree) * o.distance;
+}
+
+function bounce(o) {
+  if (o.x > w || o.x < 0) {
+    o.angle += 180 - 2 * o.angle;
+  }
+  if (o.y > h || o.y < 0) {
+    o.angle += 360 - 2 * o.angle;
+  }
+}
+
+function logo(o) {
+  let x = o.x;
+  let y = o.y;
+  let a = o.angle;
+  let d = o.distance;
+
+  ctx.beginPath();
+  ctx.moveTo(o.x, o.y);
+  for (let i = 0; i < 13; i++) {
+    o.angle += 120;
+    o.distance = 50 + i * 5;
+    forward(o);
+    ctx.lineTo(o.x, o.y);
+  }
+  ctx.strokeStyle = "white";
+  ctx.stroke();
+
+  o.x = x;
+  o.y = y;
+  o.angle = a;
+  o.distance = d;
+}
+
+function animationLoop() {
+  clear();
+  circle(o1);
+  forward(o1);
+  o1.angle += randn(20);
+  bounce(o1);
+  logo(o1);
+  requestAnimationFrame(animationLoop);
+}
+
+function setUpCanvas() {
+  ctx.fillStyle = "black";
+  ctx.fillRect(0, 0, w, h);
+}
+
+setUpCanvas();
+animationLoop();
+</script>
+</body>
+</html>
